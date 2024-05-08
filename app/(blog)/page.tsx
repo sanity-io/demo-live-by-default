@@ -1,113 +1,105 @@
-import Link from 'next/link'
-import {Suspense} from 'react'
+'use client'
+
+import {type PortableTextBlock, type SyncTag} from 'next-sanity'
 
 import Avatar from './avatar'
 import CoverImage from './cover-image'
 import DateComponent from './date'
-import MoreStories from './more-stories'
-import Onboarding from './onboarding'
 import PortableText from './portable-text'
 
-import type {HeroQueryResult, SettingsQueryResult} from '@/sanity.types'
-import * as demo from '@/sanity/lib/demo'
-import {sanityFetch} from '@/sanity/lib/fetch'
-import {heroQuery, settingsQuery} from '@/sanity/lib/queries'
+import type {PostQueryResult} from '@/sanity.types'
+import {postQuery} from '@/sanity/lib/queries'
+import {useEffect, useRef, useState} from 'react'
+import {client} from '@/sanity/lib/client'
 
-function Intro(props: {title: string | null | undefined; description: any}) {
-  const title = props.title || demo.title
-  const description = props.description?.length ? props.description : demo.description
-  return (
-    <section className="mt-16 mb-16 flex flex-col items-center lg:mb-12 lg:flex-row lg:justify-between">
-      <h1 className="text-balance text-6xl font-bold leading-tight tracking-tighter lg:pr-8 lg:text-8xl">
-        {title || demo.title}
-      </h1>
-      <h2 className="text-pretty mt-5 text-center text-lg lg:pl-8 lg:text-left">
-        <PortableText
-          className="prose-lg"
-          value={description?.length ? description : demo.description}
-        />
-      </h2>
-    </section>
-  )
-}
+const slug = 'how-does-it-work'
 
-function HeroPost({
-  title,
-  slug,
-  excerpt,
-  coverImage,
-  date,
-  author,
-}: Pick<
-  Exclude<HeroQueryResult, null>,
-  'title' | 'coverImage' | 'date' | 'excerpt' | 'author' | 'slug'
->) {
-  return (
-    <article>
-      <Link className="group mb-8 block md:mb-16" href={`/posts/${slug}`}>
-        <CoverImage image={coverImage} priority />
-      </Link>
-      <div className="mb-20 md:mb-28 md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8">
-        <div>
-          <h3 className="text-pretty mb-4 text-4xl leading-tight lg:text-6xl">
-            <Link href={`/posts/${slug}`} className="hover:underline">
-              {title}
-            </Link>
-          </h3>
-          <div className="mb-4 text-lg md:mb-0">
-            <DateComponent dateString={date} />
-          </div>
-        </div>
-        <div>
-          {excerpt && <p className="text-pretty mb-4 text-lg leading-relaxed">{excerpt}</p>}
-          {author && <Avatar name={author.name} picture={author.picture} />}
-        </div>
-      </div>
-    </article>
-  )
-}
+export default function PostPage() {
+  const [pending, setPending] = useState(true)
+  const [post, setPost] = useState<PostQueryResult | null>(null)
+  const [lastLiveEventId, setLastLiveEventId] = useState('')
+  const syncTags = useRef<SyncTag[]>([])
 
-type Props = {
-  searchParams: {[key: string]: string | string[] | undefined}
-}
+  if (!pending && !post?._id) {
+    throw new TypeError(`Could not find a post with the slug "${slug}"`)
+  }
 
-export default async function Page({searchParams: {lastLiveEventId}}: Props) {
-  const [[settings, LiveSettingsSubscription], [heroPost, LiveHeroPostSubscription]] =
-    await Promise.all([
-      sanityFetch<SettingsQueryResult>({
-        query: settingsQuery,
-        lastLiveEventId,
-      }),
-      sanityFetch<HeroQueryResult>({query: heroQuery, lastLiveEventId}),
-    ])
+  useEffect(() => {
+    client
+      .fetch(postQuery, {slug}, {filterResponse: false, lastLiveEventId})
+      .then((res) => {
+        setPost(res.result)
+        syncTags.current = res.syncTags || []
+      })
+      .finally(() => setPending(false))
+  }, [lastLiveEventId])
+
+  useEffect(() => {
+    const subscription = client.live.events().subscribe((event) => {
+      if (
+        event.type === 'message' &&
+        Array.isArray(syncTags.current) &&
+        event.tags.some((tag) => syncTags.current.includes(tag))
+      ) {
+        setLastLiveEventId(event.id)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  if (pending || !post) {
+    return (
+      <section className="flex justify-center py-12 md:py-16 lg:py-20">
+        <svg
+          className="animate-spin -ml-1 mr-3 h-5 w-5 dark:text-white text-gray-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </section>
+    )
+  }
 
   return (
     <div className="container mx-auto px-5">
-      <Intro title={settings?.title} description={settings?.description} />
-      {heroPost ? (
-        <HeroPost
-          title={heroPost.title}
-          slug={heroPost.slug}
-          coverImage={heroPost.coverImage}
-          excerpt={heroPost.excerpt}
-          date={heroPost.date}
-          author={heroPost.author}
-        />
-      ) : (
-        <Onboarding />
-      )}
-      {heroPost?._id && (
-        <aside>
-          <h2 className="mb-8 text-6xl font-bold leading-tight tracking-tighter md:text-7xl">
-            More Stories
-          </h2>
-          <Suspense>
-            <MoreStories skip={heroPost._id} limit={100} lastLiveEventId={lastLiveEventId} />
-          </Suspense>
-        </aside>
-      )}
-      <LiveSettingsSubscription />
-      <LiveHeroPostSubscription />
+      <article>
+        <h1 className="text-balance mb-12 text-6xl font-bold leading-tight tracking-tighter md:text-7xl md:leading-none lg:text-8xl">
+          {post.title}
+        </h1>
+        <div className="hidden md:mb-12 md:block">
+          {post.author && <Avatar name={post.author.name} picture={post.author.picture} />}
+        </div>
+        <div className="mb-8 sm:mx-0 md:mb-16">
+          <CoverImage image={post.coverImage} priority />
+        </div>
+        <div className="mx-auto max-w-2xl">
+          <div className="mb-6 block md:hidden">
+            {post.author && <Avatar name={post.author.name} picture={post.author.picture} />}
+          </div>
+          <div className="mb-6 text-lg">
+            <div className="mb-4 text-lg">
+              <DateComponent dateString={post.date} />
+            </div>
+          </div>
+        </div>
+        {post.content?.length && (
+          <PortableText className="mx-auto max-w-2xl" value={post.content as PortableTextBlock[]} />
+        )}
+      </article>
     </div>
   )
 }
