@@ -75,7 +75,7 @@ export default function PostPage() {
   }
 
   return (
-    <div className="container mx-auto px-5">
+    <div className="container mx-auto px-5 py-10">
       <article>
         <h1 className="text-balance mb-12 text-6xl font-bold leading-tight tracking-tighter md:text-7xl md:leading-none lg:text-8xl">
           {post.title}

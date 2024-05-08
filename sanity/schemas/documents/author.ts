@@ -6,6 +6,7 @@ export default defineType({
   title: 'Author',
   icon: UserIcon,
   type: 'document',
+  liveEdit: true,
   fields: [
     defineField({
       name: 'name',

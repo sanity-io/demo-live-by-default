@@ -21,6 +21,7 @@ export default defineType({
   title: 'Post',
   icon: DocumentTextIcon,
   type: 'document',
+  liveEdit: true,
   fields: [
     defineField({
       name: 'title',

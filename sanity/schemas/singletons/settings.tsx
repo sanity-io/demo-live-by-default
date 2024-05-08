@@ -7,6 +7,7 @@ export default defineType({
   name: 'settings',
   title: 'Settings',
   type: 'document',
+  liveEdit: true,
   icon: CogIcon,
   fields: [
     defineField({
