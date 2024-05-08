@@ -1,4 +1,4 @@
-# Demo of the new live-by-default API
+# Live by default demo - for app developers
 
 > [!IMPORTANT]
 > This is the app developer version, [there's also a version for framework and library authors that shows how it works under the hood](https://github.com/sanity-io/demo-live-by-default/tree/under-the-hood#readme).
