@@ -1,17 +1,18 @@
 {
   "private": true,
   "scripts": {
-    "predev": "npm run typegen",
-    "dev": "next",
     "prebuild": "npm run typegen",
     "build": "next build",
-    "start": "next start",
+    "predev": "npm run typegen",
+    "dev": "next",
     "lint": "next lint",
     "presetup": "echo 'about to setup env variables, follow the guide here: https://github.com/vercel/next.js/tree/canary/examples/cms-sanity#using-the-sanity-cli'",
     "setup": "npx sanity@latest init --env .env.local",
     "postsetup": "echo 'create the read token by following the rest of the guide: https://github.com/vercel/next.js/tree/canary/examples/cms-sanity#creating-a-read-token'",
+    "start": "next start",
     "typegen": "sanity schema extract && sanity typegen generate"
   },
+  "prettier": "@sanity/prettier-config",
   "dependencies": {
     "@sanity/assist": "3.0.4",
     "@sanity/icons": "2.11.8",
@@ -40,7 +41,9 @@
   },
   "devDependencies": {
     "@next/env": "latest",
+    "@sanity/prettier-config": "^1.0.2",
     "eslint": "^8.57.0",
-    "eslint-config-next": "latest"
+    "eslint-config-next": "latest",
+    "prettier": "^3.2.5"
   }
 }
