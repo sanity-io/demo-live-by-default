@@ -8,10 +8,16 @@ import type {MoreStoriesQueryResult} from '@/sanity.types'
 import {sanityFetch} from '@/sanity/lib/fetch'
 import {moreStoriesQuery} from '@/sanity/lib/queries'
 
-export default async function MoreStories(params: {skip: string; limit: number}) {
-  const data = await sanityFetch<MoreStoriesQueryResult>({
+export default async function MoreStories(props: {
+  skip: string
+  limit: number
+  lastLiveEventId: string | string[] | null | undefined
+}) {
+  const {skip, limit, lastLiveEventId} = props
+  const [data, LiveSubscription] = await sanityFetch<MoreStoriesQueryResult>({
     query: moreStoriesQuery,
-    params,
+    params: {skip, limit},
+    lastLiveEventId,
   })
 
   return (
@@ -38,6 +44,7 @@ export default async function MoreStories(params: {skip: string; limit: number})
           )
         })}
       </div>
+      <LiveSubscription />
     </>
   )
 }

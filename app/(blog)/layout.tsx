@@ -17,10 +17,11 @@ import {settingsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await sanityFetch<SettingsQueryResult>({
+  const [settings] = await sanityFetch<SettingsQueryResult>({
     query: settingsQuery,
     // Metadata should never contain stega
     stega: false,
+    lastLiveEventId: null,
   })
   const title = settings?.title || demo.title
   const description = settings?.description || demo.description
@@ -54,8 +55,10 @@ const inter = Inter({
 })
 
 async function Footer() {
-  const data = await sanityFetch<SettingsQueryResult>({
+  const [data] = await sanityFetch<SettingsQueryResult>({
     query: settingsQuery,
+    // Layouts doesn't have access to search params
+    lastLiveEventId: null,
   })
   const footer = data?.footer || []
 

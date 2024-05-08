@@ -67,13 +67,19 @@ function HeroPost({
   )
 }
 
-export default async function Page() {
-  const [settings, heroPost] = await Promise.all([
-    sanityFetch<SettingsQueryResult>({
-      query: settingsQuery,
-    }),
-    sanityFetch<HeroQueryResult>({query: heroQuery}),
-  ])
+type Props = {
+  searchParams: {[key: string]: string | string[] | undefined}
+}
+
+export default async function Page({searchParams: {lastLiveEventId}}: Props) {
+  const [[settings, LiveSettingsSubscription], [heroPost, LiveHeroPostSubscription]] =
+    await Promise.all([
+      sanityFetch<SettingsQueryResult>({
+        query: settingsQuery,
+        lastLiveEventId,
+      }),
+      sanityFetch<HeroQueryResult>({query: heroQuery, lastLiveEventId}),
+    ])
 
   return (
     <div className="container mx-auto px-5">
@@ -96,10 +102,12 @@ export default async function Page() {
             More Stories
           </h2>
           <Suspense>
-            <MoreStories skip={heroPost._id} limit={100} />
+            <MoreStories skip={heroPost._id} limit={100} lastLiveEventId={lastLiveEventId} />
           </Suspense>
         </aside>
       )}
+      <LiveSettingsSubscription />
+      <LiveHeroPostSubscription />
     </div>
   )
 }
