@@ -26,7 +26,7 @@
     "@vercel/speed-insights": "^1.0.10",
     "autoprefixer": "^10.4.19",
     "date-fns": "^3.6.0",
-    "next": "latest",
+    "next": "14.2.3",
     "next-sanity": "9.1.0-canary.0",
     "postcss": "^8.4.38",
     "react": "^18.2.0",
@@ -40,10 +40,10 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@next/env": "latest",
+    "@next/env": "14.2.3",
     "@sanity/prettier-config": "^1.0.2",
     "eslint": "^8.57.0",
-    "eslint-config-next": "latest",
+    "eslint-config-next": "14.2.3",
     "prettier": "^3.2.5"
   }
 }
