@@ -100,7 +100,7 @@ export default async function PostPage({params, searchParams: {lastLiveEventId}}
           Recent Stories
         </h2>
         <Suspense>
-          <MoreStories skip={post._id} limit={2} />
+          <MoreStories skip={post._id} limit={2} lastLiveEventId={lastLiveEventId} />
         </Suspense>
       </aside>
       <LivePostSubscription />
