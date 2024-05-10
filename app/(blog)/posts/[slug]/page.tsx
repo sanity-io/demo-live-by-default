@@ -1,5 +1,5 @@
 import type {Metadata, ResolvingMetadata} from 'next'
-import {groq, type PortableTextBlock} from 'next-sanity'
+import {type PortableTextBlock} from 'next-sanity'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -10,7 +10,7 @@ import DateComponent from '../../date'
 import MoreStories from '../../more-stories'
 import PortableText from '../../portable-text'
 
-import type {PostQueryResult, PostSlugsResult, SettingsQueryResult} from '@/sanity.types'
+import type {PostQueryResult, SettingsQueryResult} from '@/sanity.types'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch} from '@/sanity/lib/fetch'
 import {postQuery, settingsQuery} from '@/sanity/lib/queries'
@@ -20,8 +20,6 @@ type Props = {
   params: {slug: string}
   searchParams: {[key: string]: string | string[] | undefined}
 }
-
-const postSlugs = groq`*[_type == "post"]{slug}`
 
 export async function generateMetadata(
   {params, searchParams: {lastLiveEventId}}: Props,
@@ -47,17 +45,15 @@ export async function generateMetadata(
 }
 
 export default async function PostPage({params, searchParams: {lastLiveEventId}}: Props) {
-  const [[post, LivePostSubscription], [settings, LiveSettingsSubscription]] = await Promise.all([
-    sanityFetch<PostQueryResult>({
-      query: postQuery,
-      params,
-      lastLiveEventId,
-    }),
-    sanityFetch<SettingsQueryResult>({
-      query: settingsQuery,
-      lastLiveEventId,
-    }),
-  ])
+  const [settings] = await sanityFetch<SettingsQueryResult>({
+    query: settingsQuery,
+    lastLiveEventId,
+  })
+  const [post, LiveSubscription] = await sanityFetch<PostQueryResult>({
+    query: postQuery,
+    params,
+    lastLiveEventId,
+  })
 
   if (!post?._id) {
     return notFound()
@@ -103,8 +99,7 @@ export default async function PostPage({params, searchParams: {lastLiveEventId}}
           <MoreStories skip={post._id} limit={2} lastLiveEventId={lastLiveEventId} />
         </Suspense>
       </aside>
-      <LivePostSubscription />
-      <LiveSettingsSubscription />
+      <LiveSubscription />
     </div>
   )
 }

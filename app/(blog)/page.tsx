@@ -72,14 +72,14 @@ type Props = {
 }
 
 export default async function Page({searchParams: {lastLiveEventId}}: Props) {
-  const [[settings, LiveSettingsSubscription], [heroPost, LiveHeroPostSubscription]] =
-    await Promise.all([
-      sanityFetch<SettingsQueryResult>({
-        query: settingsQuery,
-        lastLiveEventId,
-      }),
-      sanityFetch<HeroQueryResult>({query: heroQuery, lastLiveEventId}),
-    ])
+  const [settings] = await sanityFetch<SettingsQueryResult>({
+    query: settingsQuery,
+    lastLiveEventId,
+  })
+  const [heroPost, LiveSubscription] = await sanityFetch<HeroQueryResult>({
+    query: heroQuery,
+    lastLiveEventId,
+  })
 
   return (
     <div className="container mx-auto px-5">
@@ -106,8 +106,7 @@ export default async function Page({searchParams: {lastLiveEventId}}: Props) {
           </Suspense>
         </aside>
       )}
-      <LiveSettingsSubscription />
-      <LiveHeroPostSubscription />
+      <LiveSubscription />
     </div>
   )
 }
