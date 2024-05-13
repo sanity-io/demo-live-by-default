@@ -34,7 +34,7 @@
     "sanity": "3.41.1",
     "sanity-plugin-asset-source-unsplash": "3.0.1",
     "server-only": "^0.0.1",
-    "styled-components": "6.1.10",
+    "styled-components": "6.1.11",
     "tailwindcss": "^3.4.3",
     "typescript": "5.4.5"
   },
