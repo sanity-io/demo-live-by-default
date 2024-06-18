@@ -25,7 +25,7 @@ export const projectId = assertValue(
  * see https://www.sanity.io/docs/api-versioning for how versioning works
  * we have to use `vX` to use `syncTags` and the new `client.live.events()` API
  */
-export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-06-18'
+export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || 'X'
 
 /**
  * Used to configure edit intent links, for Presentation Mode, as well as to configure where the Studio is mounted in the router.

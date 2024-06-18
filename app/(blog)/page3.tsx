@@ -21,6 +21,8 @@ const client = createClient({
 export default function PostPage() {
   const [pending, setPending] = useState(true)
   const [post, setPost] = useState<PostQueryResult | null>(null)
+  const [lastLiveEventId, setLastLiveEventId] = useState('')
+  const syncTags = useRef<SyncTag[]>([])
 
   if (!pending && !post?._id) {
     throw new TypeError(`Could not find a post with the slug "${slug}"`)
@@ -28,12 +30,24 @@ export default function PostPage() {
 
   useEffect(() => {
     client
-      .fetch<PostQueryResult>(postQuery, {slug})
+      .fetch(postQuery, {slug}, {filterResponse: false, lastLiveEventId})
       .then((res) => {
-        console.log('Fetched post', res)
-        setPost(res)
+        console.log('Fetched post', res?.result)
+        setPost(res.result)
+        console.log('Setting sync tags', res.syncTags || [])
+        syncTags.current = res.syncTags || []
       })
       .finally(() => setPending(false))
+  }, [lastLiveEventId])
+
+  useEffect(() => {
+    const subscription = client.live.events().subscribe((event) => {
+      if (event.type === 'message' && event.tags.some((tag) => syncTags.current.includes(tag))) {
+        console.log('Sync tags changed, refetching', event, syncTags.current)
+        setLastLiveEventId(event.id)
+      }
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
   return <Post post={post} pending={pending} />

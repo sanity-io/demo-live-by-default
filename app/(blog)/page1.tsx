@@ -1,7 +1,7 @@
 'use client'
 
-import {createClient, type SyncTag} from '@sanity/client'
-import {useEffect, useRef, useState} from 'react'
+import {createClient} from '@sanity/client'
+import {useEffect, useState} from 'react'
 
 import type {PostQueryResult} from '@/sanity.types'
 import {postQuery} from '@/sanity/lib/queries'
@@ -28,10 +28,10 @@ export default function PostPage() {
 
   useEffect(() => {
     client
-      .fetch<PostQueryResult>(postQuery, {slug})
+      .fetch(postQuery, {slug}, {filterResponse: false})
       .then((res) => {
-        console.log('Fetched post', res)
-        setPost(res)
+        console.log('Fetched post', res?.result)
+        setPost(res.result)
       })
       .finally(() => setPending(false))
   }, [])
