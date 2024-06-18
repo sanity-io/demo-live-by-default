@@ -13,7 +13,7 @@ const slug = 'how-does-it-work'
 const client = createClient({
   projectId: 'pv8y60vp',
   dataset: 'live-by-default-under-the-hood',
-  // apiVersion: '2024-06-18',
+  // apiVersion: '2021-03-26',
   apiVersion: 'X',
   useCdn: true,
 })

@@ -1,7 +1,7 @@
 'use client'
 
-import {createClient, type SyncTag} from '@sanity/client'
-import {useEffect, useRef, useState} from 'react'
+import {createClient} from '@sanity/client'
+import {useEffect, useState} from 'react'
 
 import type {PostQueryResult} from '@/sanity.types'
 import {postQuery} from '@/sanity/lib/queries'
@@ -13,7 +13,7 @@ const slug = 'how-does-it-work'
 const client = createClient({
   projectId: 'pv8y60vp',
   dataset: 'live-by-default-under-the-hood',
-  // apiVersion: '2024-06-18',
+  // apiVersion: '2021-03-26',
   apiVersion: 'X',
   useCdn: true,
 })
