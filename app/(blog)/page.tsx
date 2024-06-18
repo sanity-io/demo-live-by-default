@@ -36,11 +36,7 @@ export default function PostPage() {
 
   useEffect(() => {
     const subscription = client.live.events().subscribe((event) => {
-      if (
-        event.type === 'message' &&
-        Array.isArray(syncTags.current) &&
-        event.tags.some((tag) => syncTags.current.includes(tag))
-      ) {
+      if (event.type === 'message' && event.tags.some((tag) => syncTags.current.includes(tag))) {
         setLastLiveEventId(event.id)
       }
     })
