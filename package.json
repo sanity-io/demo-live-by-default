@@ -16,7 +16,7 @@
     "@sanity/assist": "3.0.4",
     "@sanity/icons": "2.11.8",
     "@sanity/image-url": "1.0.2",
-    "@sanity/preview-url-secret": "1.6.13",
+    "@sanity/preview-url-secret": "2.1.16",
     "@sanity/vision": "3.42.1",
     "@tailwindcss/typography": "^0.5.12",
     "@types/node": "^20.12.7",
