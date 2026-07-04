@@ -14,7 +14,7 @@
   "prettier": "@sanity/prettier-config",
   "dependencies": {
     "@sanity/assist": "3.0.4",
-    "@sanity/icons": "2.11.8",
+    "@sanity/icons": "3.8.0",
     "@sanity/image-url": "1.0.2",
     "@sanity/preview-url-secret": "1.6.13",
     "@sanity/vision": "3.42.1",
