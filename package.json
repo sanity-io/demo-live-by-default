@@ -39,7 +39,7 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@next/env": "14.2.3",
+    "@next/env": "15.5.25",
     "@sanity/prettier-config": "^1.0.2",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
